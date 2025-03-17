@@ -1,12 +1,13 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
+require("dotenv").config(); // Load environment variables
 
 const app = express();
 app.use(bodyParser.json());
 
-const RAZORPAY_KEY_ID = "rzp_live_l7xAVsGH4I68RB";
-const RAZORPAY_KEY_SECRET = "E6s7oC9DWkiMgC3I5KeEuJTf";
+const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
+const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
 
 // Webhook route
 app.post("/api/webhook", async (req, res) => {
@@ -14,16 +15,16 @@ app.post("/api/webhook", async (req, res) => {
 
     if (event.event === "payment.authorized") {
         const paymentId = event.payload.payment.entity.id;
-        const amount = event.payload.payment.entity.amount; // Amount in paise (₹1 = 100 paise)
+        const amount = event.payload.payment.entity.amount; // Amount in paise
 
         try {
             // Capture the payment
             const response = await axios({
                 method: "POST",
-                url: https://api.razorpay.com/v1/payments/${paymentId}/capture,
+                url: `https://api.razorpay.com/v1/payments/${paymentId}/capture`,
                 auth: {
-                    username: rzp_live_l7xAVsGH4I68RB,
-                    password: E6s7oC9DWkiMgC3I5KeEuJTf
+                    username: RAZORPAY_KEY_ID,
+                    password: RAZORPAY_KEY_SECRET
                 },
                 data: {
                     amount: amount,
@@ -43,11 +44,7 @@ app.post("/api/webhook", async (req, res) => {
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(Server running on port ${PORT});
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
 
